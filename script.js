@@ -83,6 +83,23 @@ function clearItems() {
   }
 }
 
+// My Attempt at filtering items, we will override this with Brad's in the final version but this works
+function filterItems(e) {
+  console.log(e.target.value);
+  const items = Array.from(itemlist.querySelectorAll('li'));
+  if(e.target.value === '') {
+    items.forEach(item => item.style.display = 'flex');
+  } else {
+    items.forEach((item) => {
+      if(!item.innerText.toLowerCase().includes(e.target.value.toLowerCase())) {
+        item.style.display = 'none';
+      } else {
+        item.style.display = 'flex';
+      }
+    })
+  }
+}
+
 // Update UI
 function checkUI() {
   const items = itemlist.querySelectorAll('li');
@@ -99,6 +116,7 @@ function checkUI() {
 itemForm.addEventListener('submit', addItem);
 itemlist.addEventListener('click', removeItem);
 clearBtn.addEventListener('click', clearItems);
+filter.addEventListener('keyup', filterItems);
 
 // Check UI on page load
 checkUI();
