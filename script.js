@@ -2,7 +2,7 @@ const itemForm = document.getElementById('item-form');
 const itemlist = document.getElementById('item-list');
 const itemInput = document.getElementById('item-input');
 const clearBtn = document.getElementById('clear');
-const filter = document.getElementById('filter');
+const itemFilter = document.getElementById('filter');
 
 function addItem(e) {
   e.preventDefault();
@@ -83,21 +83,18 @@ function clearItems() {
   }
 }
 
-// My Attempt at filtering items, we will override this with Brad's in the final version but this works
+// Brad's Filter Items you can see my version in previous versions of this file on github
 function filterItems(e) {
-  console.log(e.target.value);
-  const items = Array.from(itemlist.querySelectorAll('li'));
-  if(e.target.value === '') {
-    items.forEach(item => item.style.display = 'flex');
-  } else {
-    items.forEach((item) => {
-      if(!item.innerText.toLowerCase().includes(e.target.value.toLowerCase())) {
-        item.style.display = 'none';
-      } else {
-        item.style.display = 'flex';
-      }
-    })
-  }
+  const items = itemlist.querySelectorAll('li');
+  const text = e.target.value.toLowerCase();
+  items.forEach(item => {
+    const itemName = item.firstChild.textContent.toLowerCase();
+    if(itemName.indexOf(text) != -1) {
+      item.style.display = 'flex';
+    } else {
+      item.style.display = 'none';
+    }
+  })
 }
 
 // Update UI
@@ -116,7 +113,7 @@ function checkUI() {
 itemForm.addEventListener('submit', addItem);
 itemlist.addEventListener('click', removeItem);
 clearBtn.addEventListener('click', clearItems);
-filter.addEventListener('keyup', filterItems);
+itemFilter.addEventListener('input', filterItems);
 
 // Check UI on page load
 checkUI();
