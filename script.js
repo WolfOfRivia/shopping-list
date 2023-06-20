@@ -4,6 +4,13 @@ const itemInput = document.getElementById('item-input');
 const clearBtn = document.getElementById('clear');
 const itemFilter = document.getElementById('filter');
 
+// Show items in the UI
+function displayItems() {
+  const itemsFromStorage = getItemsFromStorage();
+  itemsFromStorage.forEach(item => addItemToDOM(item));
+  checkUI();
+}
+
 function onAddItemSubmit(e) {
   e.preventDefault();
   // Get input text
@@ -27,24 +34,6 @@ function addItemToDOM(item) {
   const listItemText = document.createTextNode(item);
   // Append new li with text and classes to ul element
   itemlist.appendChild(createListItem(listItemText, 'item'));
-}
-
-function addItemToStorage(item) {
-  // Init Variable (This will end up being an empty array or an array of stringified objects)
-  let itemsFromStorage;
-  // Check if items exists in local storage
-  if(localStorage.getItem('items') === null) {
-    // If no initialize array
-    itemsFromStorage = [];
-  } else {
-    // If items exist get them from storage and parse the string into an array for use
-    itemsFromStorage = JSON.parse(localStorage.getItem('items'));
-  }
-  console.log(itemsFromStorage);
-  // Push new item to array
-  itemsFromStorage.push(item);
-  // Converting the new item to JSON string and setting them back to local storage
-  localStorage.setItem('items', JSON.stringify(itemsFromStorage));
 }
 
 // Create list Item takes text node as arg
@@ -73,20 +62,6 @@ function createDeleteButton(classes) {
   return deleteBtn;
 }
 
-
-/* ======= 
-  My function on loading items from localstorage this method will be overridden by the course version
-  ======= */
-function loadItemsFromStorage() {
-  let listItems = JSON.parse(localStorage.getItem('items'));
-  if(listItems != null) {
-    listItems.forEach(item => addItemToDOM(item));
-  } else {
-    return;
-  }
-  checkUI();
-}
-
 // Create icon for delete button
 function createIcon(classes) {
   // Create i element
@@ -95,6 +70,31 @@ function createIcon(classes) {
   icon.className = classes;
   // Return for later use
   return icon;
+}
+
+// Moved from line 32 and rewritten
+function addItemToStorage(item) {
+  // Init Variable (This will end up being an empty array or an array of stringified objects)
+  let itemsFromStorage = getItemsFromStorage();
+  // Push new item to array
+  itemsFromStorage.push(item);
+  // Converting the new item to JSON string and setting them back to local storage
+  localStorage.setItem('items', JSON.stringify(itemsFromStorage));
+}
+
+// Load items to DOM from storage
+function getItemsFromStorage() {
+  // Init Variable (This will end up being an empty array or an array of stringified objects)
+  let itemsFromStorage;
+  // Check if items exists in local storage
+  if(localStorage.getItem('items') === null) {
+    // If no initialize array
+    itemsFromStorage = [];
+  } else {
+    // If items exist get them from storage and parse the string into an array for use
+    itemsFromStorage = JSON.parse(localStorage.getItem('items'));
+  }
+  return itemsFromStorage;
 }
 
 // Remove list item
@@ -148,15 +148,22 @@ function checkUI() {
   }
 }
 
-/* ======= 
-  My function on loading items from localstorage this method will be overridden by the course version
-  ======= */
-window.addEventListener('DOMContentLoaded', loadItemsFromStorage);
-// Run add item on submit
-itemForm.addEventListener('submit', onAddItemSubmit);
-itemlist.addEventListener('click', removeItem);
-clearBtn.addEventListener('click', clearItems);
-itemFilter.addEventListener('input', filterItems);
+// Initalize App (This can be done to hide the events from the global scope (preference))
+// Any functions I want running on page load can go in here
+function init() {
+  // Run add item on submit
+  itemForm.addEventListener('submit', onAddItemSubmit);
+  // Remove item on click
+  itemlist.addEventListener('click', removeItem);
+  // Clear all items
+  clearBtn.addEventListener('click', clearItems);
+  // Filter items
+  itemFilter.addEventListener('input', filterItems);
+  // Show items in UI
+  document.addEventListener('DOMContentLoaded', displayItems);
+  // Check UI on page load (Hide or show filter input and clear btn)
+  checkUI();
+}
 
-// Check UI on page load
-checkUI();
+// Start App
+init();
