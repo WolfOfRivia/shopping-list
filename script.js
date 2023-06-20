@@ -38,8 +38,9 @@ function addItemToStorage(item) {
     itemsFromStorage = [];
   } else {
     // If items exist get them from storage and parse the string into an array for use
-    itemsFromStorage = JSON.parse(localStorage.getItem('item'));
+    itemsFromStorage = JSON.parse(localStorage.getItem('items'));
   }
+  console.log(itemsFromStorage);
   // Push new item to array
   itemsFromStorage.push(item);
   // Converting the new item to JSON string and setting them back to local storage
@@ -70,6 +71,20 @@ function createDeleteButton(classes) {
   deleteBtn.appendChild(createIcon('fa-solid fa-xmark'));
   // Return for later use
   return deleteBtn;
+}
+
+
+/* ======= 
+  My function on loading items from localstorage this method will be overridden by the course version
+  ======= */
+function loadItemsFromStorage() {
+  let listItems = JSON.parse(localStorage.getItem('items'));
+  if(listItems != null) {
+    listItems.forEach(item => addItemToDOM(item));
+  } else {
+    return;
+  }
+  checkUI();
 }
 
 // Create icon for delete button
@@ -133,6 +148,10 @@ function checkUI() {
   }
 }
 
+/* ======= 
+  My function on loading items from localstorage this method will be overridden by the course version
+  ======= */
+window.addEventListener('DOMContentLoaded', loadItemsFromStorage);
 // Run add item on submit
 itemForm.addEventListener('submit', onAddItemSubmit);
 itemlist.addEventListener('click', removeItem);
