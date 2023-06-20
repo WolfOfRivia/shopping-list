@@ -116,10 +116,12 @@ function removeItem(item) {
   }
 }
 
-// This worked but probably not quite right Test adding two of the same item and you'll see (This was my version btw)
+// Course Version of Remove Item from storage
 function removeItemFromStorage(item) {
   let itemsFromStorage = getItemsFromStorage();
-  itemsFromStorage.splice(itemsFromStorage.indexOf(item), 1)
+  // Filter out item to be removed
+  itemsFromStorage = itemsFromStorage.filter((i) => i !== item);
+  // Reset to local storage
   localStorage.setItem('items', JSON.stringify(itemsFromStorage));
 }
 
@@ -129,9 +131,11 @@ function clearItems() {
     // While true run function
     while(itemlist.firstChild) {
       itemlist.removeChild(itemlist.firstChild);
-      // Check UI after every deleted item
-      checkUI();
     }
+    // Clear from local storage
+    localStorage.removeItem('items');
+    // Check UI after every deleted item
+    checkUI();
   }
 }
 
