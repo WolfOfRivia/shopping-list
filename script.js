@@ -3,12 +3,14 @@ const itemlist = document.getElementById('item-list');
 const itemInput = document.getElementById('item-input');
 const clearBtn = document.getElementById('clear');
 const itemFilter = document.getElementById('filter');
+const formBtn = itemForm.querySelector('Button');
+let isEditMode = false;
 
 // Show items in the UI
 function displayItems() {
   const itemsFromStorage = getItemsFromStorage();
   itemsFromStorage.forEach(item => addItemToDOM(item));
-  checkUI();
+  resetUI();
 }
 
 function onAddItemSubmit(e) {
@@ -20,11 +22,24 @@ function onAddItemSubmit(e) {
     alert('Please add an Item');
     return;
   }
+  // Check for edit mode
+  if(isEditMode) {
+    // Get item currently being editied
+    const itemToEdit = itemlist.querySelector('.edit-mode');
+    // Remove from Storage
+    removeItemFromStorage(itemToEdit.textContent);
+    // Remove class
+    itemToEdit.classList.remove('edit-mode');
+    // Remove from Dom
+    itemToEdit.remove();
+    isEditMode = false;
+
+  }
   // Add list item to DOM
   addItemToDOM(newItem)
   // Add list item to local storage
   addItemToStorage(newItem);
-  checkUI();
+  resetUI();
   // Reset input to empty
   itemInput.value = '';
 }
@@ -101,7 +116,26 @@ function getItemsFromStorage() {
 function onClickItem(e) {
   if(e.target.parentElement.classList.contains('remove-item')) {
     removeItem(e.target.parentElement.parentElement);
+  } else {
+    setItemToEdit(e.target);
   }
+}
+
+// Edit item
+function setItemToEdit(item) {
+  // Set edit mode
+  isEditMode = true;
+  // Remove edit mode class if any
+  itemlist
+    .querySelectorAll('li')
+    .forEach(i => i.classList.remove('edit-mode'));
+  // Add edit mode class to item intended for edit
+  item.classList.add('edit-mode');
+  // Change form button to indicate edit mode
+  formBtn.innerHTML = '<i class="fa-solid fa-pen"></i> Update Item';
+  formBtn.style.backgroundColor = '#228b22';
+  // Change form input value to indicate edit mode
+  itemInput.value = item.textContent;
 }
 
 // Remove list item
@@ -112,7 +146,7 @@ function removeItem(item) {
     // Remove item from Storage
     removeItemFromStorage(item.textContent);
     // Check UI
-    checkUI();
+    resetUI();
   }
 }
 
@@ -135,7 +169,7 @@ function clearItems() {
     // Clear from local storage
     localStorage.removeItem('items');
     // Check UI after every deleted item
-    checkUI();
+    resetUI();
   }
 }
 
@@ -153,16 +187,26 @@ function filterItems(e) {
   })
 }
 
-// Update UI
-function checkUI() {
+// Reset UI
+function resetUI() {
+  // Clear input
+  itemInput.value = '';
+  // Get items if any
   const items = itemlist.querySelectorAll('li');
   if(items.length === 0) {
+    // Hide filter and clear btn
     filter.style.display = 'none';
     clearBtn.style.display = 'none';
   } else {
+    // Display filter and clear btn
     filter.style.display = 'block';
     clearBtn.style.display = 'block';
   }
+  // Reset button to original state
+  formBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Add Item';
+  formBtn.style.backgroundColor = '#333';
+  // Turn off edit mode
+  isEditMode = false;
 }
 
 // Initalize App (This can be done to hide the events from the global scope (preference))
@@ -179,7 +223,7 @@ function init() {
   // Show items in UI
   document.addEventListener('DOMContentLoaded', displayItems);
   // Check UI on page load (Hide or show filter input and clear btn)
-  checkUI();
+  resetUI();
 }
 
 // Start App
