@@ -97,17 +97,30 @@ function getItemsFromStorage() {
   return itemsFromStorage;
 }
 
-// Remove list item
-function removeItem(e) {
-  e.preventDefault('');
-  const icon = e.target;
-  if(icon.classList.contains('fa-xmark')) {
-    // Add a confirmation alert window 
-    if(confirm('Are you sure you want to remove this item?')) {
-      icon.parentElement.parentElement.remove();
-    }
+// On click item
+function onClickItem(e) {
+  if(e.target.parentElement.classList.contains('remove-item')) {
+    removeItem(e.target.parentElement.parentElement);
   }
-  checkUI();
+}
+
+// Remove list item
+function removeItem(item) {
+  if(confirm('Are you sure you want to delete this item?')) {
+    // Remove item from DOM
+    item.remove();
+    // Remove item from Storage
+    removeItemFromStorage(item.textContent);
+    // Check UI
+    checkUI();
+  }
+}
+
+// This worked but probably not quite right Test adding two of the same item and you'll see (This was my version btw)
+function removeItemFromStorage(item) {
+  let itemsFromStorage = getItemsFromStorage();
+  itemsFromStorage.splice(itemsFromStorage.indexOf(item), 1)
+  localStorage.setItem('items', JSON.stringify(itemsFromStorage));
 }
 
 // Clear entire list
@@ -154,7 +167,7 @@ function init() {
   // Run add item on submit
   itemForm.addEventListener('submit', onAddItemSubmit);
   // Remove item on click
-  itemlist.addEventListener('click', removeItem);
+  itemlist.addEventListener('click', onClickItem);
   // Clear all items
   clearBtn.addEventListener('click', clearItems);
   // Filter items
