@@ -34,6 +34,12 @@ function onAddItemSubmit(e) {
     itemToEdit.remove();
     isEditMode = false;
 
+  } else {
+    // Stop if item already exists
+    if(checkIfItemExists(newItem)) {
+      alert('That item already exists!');
+      return;
+    }
   }
   // Add list item to DOM
   addItemToDOM(newItem)
@@ -119,6 +125,12 @@ function onClickItem(e) {
   } else {
     setItemToEdit(e.target);
   }
+}
+
+// Prevent duplicate items
+function checkIfItemExists(item) {
+  const itemsFromStorage = getItemsFromStorage();
+  return itemsFromStorage.includes(item); // True or False
 }
 
 // Edit item
